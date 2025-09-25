@@ -1,4 +1,3 @@
-
 // Three.jsとOrbitControlsをインポート
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -8,7 +7,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// ▼▼▼▼▼ あなたのFirebaseプロジェクトの設定情報に必ず書き換えてください ▼▼▼▼▼
+// ▼▼▼▼▼ あなたのFirebaseプロジェクトの設定情報 ▼▼▼▼▼
 const firebaseConfig = {
   apiKey: "AIzaSyCSx3TCBm1N45TXEaSnKupElQOYb7XFNs8",
   authDomain: "mahjong3d-7cc2c.firebaseapp.com",
@@ -30,15 +29,10 @@ const roomsContainer = document.getElementById('rooms');
 const newRoomForm = document.getElementById('new-room-form');
 const newRoomNameInput = document.getElementById('new-room-name');
 const currentRoomNameEl = document.getElementById('current-room-name');
-const messagesContainer = document.getElementById('messages');
-const messageForm = document.getElementById('message-form');
-const messageInput = document.getElementById('message-input');
 const threeContainer = document.getElementById('three-container');
 
 // アプリ全体で使う変数を準備
 let currentUser = null;
-let currentRoomId = null;
-let unsubscribeMessages = null; 
 let unsubscribeRooms = null; 
 const threeScenes = {};
 let currentThreeScene = null;
@@ -50,11 +44,10 @@ onAuthStateChanged(auth, user => {
     if (user) {
         currentUser = user;
         console.log("ログイン成功！ User ID:", currentUser.uid);
-        initChat();
+        initApp();
     } else {
         currentUser = null;
         if (unsubscribeRooms) unsubscribeRooms();
-        if (unsubscribeMessages) unsubscribeMessages();
     }
 });
 
@@ -64,9 +57,9 @@ signInAnonymously(auth).catch(error => {
 });
 
 // =================================================================
-// チャットのメイン機能
+// アプリのメイン機能
 // =================================================================
-function initChat() {
+function initApp() {
     // 新しいルームを作成する機能
     newRoomForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -91,48 +84,14 @@ function initChat() {
             roomsContainer.appendChild(roomElement);
         });
     });
-
-    // メッセージを送信する機能
-    messageForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const messageText = messageInput.value.trim();
-        if (messageText && currentUser && currentRoomId) {
-            const messagesRef = collection(db, 'rooms', currentRoomId, 'messages');
-            addDoc(messagesRef, {
-                text: messageText,
-                senderId: currentUser.uid,
-                senderName: "User " + currentUser.uid.substring(0, 4),
-                timestamp: serverTimestamp()
-            });
-            messageInput.value = '';
-        }
-    });
 }
 
 // =================================================================
 // ルーム選択時の処理
 // =================================================================
 function selectRoom(roomId, roomName) {
-    // チャット部分の処理
-    currentRoomId = roomId;
+    // ルーム名を表示
     currentRoomNameEl.textContent = roomName;
-    messageInput.disabled = false;
-    messageForm.querySelector('button').disabled = false;
-    if (unsubscribeMessages) unsubscribeMessages();
-    messagesContainer.innerHTML = 'メッセージを読み込み中...';
-    const messagesRef = collection(db, 'rooms', roomId, 'messages');
-    const messagesQuery = query(messagesRef, orderBy('timestamp'));
-    unsubscribeMessages = onSnapshot(messagesQuery, snapshot => {
-        messagesContainer.innerHTML = '';
-        snapshot.forEach(doc => {
-            const msg = doc.data();
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            messageElement.innerHTML = `<span>${msg.senderName || '名無しさん'}</span>${msg.text}`;
-            messagesContainer.appendChild(messageElement);
-        });
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    });
 
     // Three.jsの処理
     if (!threeScenes[roomId]) {
@@ -162,9 +121,9 @@ function createThreeScene(container) {
 
     // OrbitControlsの作成
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // 滑らかな動き（慣性）を有効にする
+    controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.autoRotate = true; // 自動で回転させる
+    controls.autoRotate = true;
     controls.autoRotateSpeed = 1.0;
 
     // 4. ライト
@@ -182,12 +141,9 @@ function createThreeScene(container) {
 
     // 6. アニメーションループ
     function animate() {
-        if (currentThreeScene !== returnedScene) return; // 表示中でなければ停止
+        if (currentThreeScene !== returnedScene) return;
         requestAnimationFrame(animate);
-
-        // Dampingが有効な場合、毎フレームcontrolsを更新する必要がある
         controls.update();
-        
         renderer.render(scene, camera);
     }
     

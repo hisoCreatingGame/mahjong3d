@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Chat with Three.js</title>
+    <title>Firebase 3D Viewer</title>
     <style>
         /* 基本的なレイアウト設定 */
         html, body {
@@ -11,7 +11,7 @@
             padding: 0;
             height: 100%;
             font-family: sans-serif;
-            overflow: hidden; /* スクロールバーを非表示 */
+            overflow: hidden;
         }
         #main-container {
             display: flex;
@@ -19,8 +19,8 @@
         }
         /* 左：ルーム一覧 */
         #room-list {
-            width: 20%;
-            min-width: 180px;
+            width: 25%;
+            min-width: 200px;
             border-right: 1px solid #ccc;
             padding: 10px;
             box-sizing: border-box;
@@ -31,39 +31,34 @@
              flex-grow: 1;
              overflow-y: auto;
         }
-        /* 中央：チャットエリア */
-        #chat-container {
-            width: 40%;
+        /* 右：3Dビューアエリア */
+        #viewer-container {
+            width: 75%;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #ccc;
         }
-        #messages {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
+        #viewer-header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #ccc;
         }
-        /* 右：Three.js描画エリア */
         #three-container {
-            width: 40%;
+            flex-grow: 1; /* 残りの高さをすべて使う */
             position: relative;
         }
         #three-container canvas {
-            display: block; /* canvasの余白を消す */
+            display: block;
         }
         /* その他 */
-        #message-form { display: flex; padding: 10px; }
-        #message-input { flex-grow: 1; padding: 8px; }
+        #new-room-form { display: flex; }
+        #new-room-name { flex-grow: 1; }
         button { padding: 8px 12px; }
-        .message { margin-bottom: 10px; }
-        .message span { font-weight: bold; margin-right: 10px; }
     </style>
 </head>
 <body>
 
     <div id="main-container">
         <div id="room-list">
-            <h2>チャットルーム</h2>
+            <h2>ルーム一覧</h2>
             <div id="rooms"></div>
             <form id="new-room-form">
                 <input type="text" id="new-room-name" placeholder="新しいルーム名" required>
@@ -71,16 +66,12 @@
             </form>
         </div>
 
-        <div id="chat-container">
-            <h2 id="current-room-name">ルームを選択してください</h2>
-            <div id="messages"></div>
-            <form id="message-form">
-                <input type="text" id="message-input" placeholder="メッセージを入力..." autocomplete="off" disabled>
-                <button type="submit" disabled>送信</button>
-            </form>
+        <div id="viewer-container">
+            <div id="viewer-header">
+                <h2 id="current-room-name">ルームを選択してください</h2>
+            </div>
+            <div id="three-container"></div>
         </div>
-
-        <div id="three-container"></div>
     </div>
 
 
@@ -96,7 +87,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
+    
     <script type="module" src="script.js"></script>
 
 </body>
