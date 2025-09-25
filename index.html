@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Chat with Three.js</title>
+    <style>
+        /* 基本的なレイアウト設定 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: sans-serif;
+            overflow: hidden; /* スクロールバーを非表示 */
+        }
+        #main-container {
+            display: flex;
+            height: 100vh;
+        }
+        /* 左：ルーム一覧 */
+        #room-list {
+            width: 20%;
+            min-width: 180px;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        #rooms {
+             flex-grow: 1;
+             overflow-y: auto;
+        }
+        /* 中央：チャットエリア */
+        #chat-container {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ccc;
+        }
+        #messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        /* 右：Three.js描画エリア */
+        #three-container {
+            width: 40%;
+            position: relative;
+        }
+        #three-container canvas {
+            display: block; /* canvasの余白を消す */
+        }
+        /* その他 */
+        #message-form { display: flex; padding: 10px; }
+        #message-input { flex-grow: 1; padding: 8px; }
+        button { padding: 8px 12px; }
+        .message { margin-bottom: 10px; }
+        .message span { font-weight: bold; margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        <div id="room-list">
+            <h2>チャットルーム</h2>
+            <div id="rooms"></div>
+            <form id="new-room-form">
+                <input type="text" id="new-room-name" placeholder="新しいルーム名" required>
+                <button type="submit">ルーム作成</button>
+            </form>
+        </div>
+
+        <div id="chat-container">
+            <h2 id="current-room-name">ルームを選択してください</h2>
+            <div id="messages"></div>
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="メッセージを入力..." autocomplete="off" disabled>
+                <button type="submit" disabled>送信</button>
+            </form>
+        </div>
+
+        <div id="three-container"></div>
+    </div>
+
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.138.0/build/three.module.js",
+            "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.138.0/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>

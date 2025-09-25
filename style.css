@@ -1,0 +1,27 @@
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ▼▼▼▼▼ STEP 1でコピーした自分の設定情報に書き換える ▼▼▼▼▼
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "my-chat-app.firebaseapp.com",
+            projectId: "my-chat-app",
+            storageBucket: "my-chat-app.appspot.com",
+            messagingSenderId: "...",
+            appId: "1:..."
+        };
+        // ▲▲▲▲▲ ここまで ▲▲▲▲▲
+
+        // Firebaseの初期化
+        firebase.initializeApp(firebaseConfig);
+
+        // 各サービスのインスタンスを取得
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // これ以降にチャット機能のコードを書いていきます
+
+    </script>
+</body>
